@@ -31,7 +31,7 @@ library(scales)
 w <- matrix(1, 3, 3)  # for smoothing.  if you want to skip the corners, use c(0,1,0,1,0,1,0,1,0), nrow=3)
 
 myfile <- 'starter_vs_yield_2019_data.shp'  # yield data with product codes
-dobyhand <- TRUE # switch for whether you want to do the interactive region drawing or just read a file on disk
+dobyhand <- FALSE # switch for whether you want to do the interactive region drawing or just read a file on disk
 shpfile <- 'E100_2019_startertestAOI.shp' # polygon shape file describing region to study
 
 

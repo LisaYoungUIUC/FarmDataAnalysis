@@ -1,0 +1,7 @@
+*.dbf
+*.prj
+*.shp
+*.shx
+starter_vs_yield_2019.Rmd
+*.oldcomments.R
+*.pdf

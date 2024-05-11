@@ -14,9 +14,7 @@
 
 # TO DO:
 # - for report, look up the analysis of the starter and sulfur so can report that as well.
-# - then put this into a markdown doc
-# - put all the shape files into gitignore
-# - clean up header of this file.  maybe save another version and put it in gitignore?
+# - can you figure out how to make a multipanel figure, maybe 2 on top of each other 
 
 
 
@@ -25,6 +23,7 @@ library(janitor)
 library(sf)
 library(raster)  # possible conflict with dplyr on 'select'. raster::select is an interactive cursor-draw polygon thing.
 library(scales)
+library(gridExtra)
 
 # setup information
 
@@ -107,11 +106,11 @@ if (dobyhand==TRUE){
 p <- ggplot(data_ras1_df) +
    geom_raster(aes(x=x, y=y, fill=Yld_Vol_Dr)) +
    scale_fill_distiller(palette='YlGn', limits=c(120,270), direction='horizontal', oob=squish) + # squish is in the scales package and it pegs OOB values at the ends of the color scale (rather than NA)
-   labs(x='Ft', y='Ft', title='Starter Experiment 2019') +
+   labs(x='Ft', y='Ft', title='Yield') +
    geom_sf(data=mypoly, fill=NA, linewidth=1., color='blue', linetype='21') +
    coord_sf(datum=target_crs)
 print(p)
-ggsave('starter_vs_yield_2019_a.pdf')
+ggsave('starter_vs_yield_2019_a.png')
 
 
 # plot different treatment types with polygon region
@@ -120,10 +119,10 @@ p2 <- ggplot(data_f) +
    geom_sf(aes(color=Product)) +
    scale_color_manual(values=mycolors) +
    geom_sf(data=mypoly, fill=NA, linewidth=1., color='blue', linetype='21') +
-   labs(x='Ft', y='Ft', title='Starter Experiment 2019') +
+   labs(x='Ft', y='Ft', title='Product Map') +
    coord_sf(datum=target_crs)
 print(p2)
-ggsave('starter_vs_yield_2019_b.pdf')
+ggsave('starter_vs_yield_2019_b.png')
 
 
 # crop the big data frame to retain only the yield data within the boundary
@@ -143,9 +142,13 @@ p3 <- ggplot(data_f_crop, aes(x = Yld_Vol_Dr, fill=Product)) +
    scale_fill_manual(values=mycolors) +
    geom_vline(xintercept = meds.crop$medyld, color=mycolors, linewidth=1) +
    xlim(190,260) +
-   labs(title='Starter experiment 2019', x='Yld_Vol_Dr (bu/ac)') +
+   labs(title='Yield vs Product', x='Yld_Vol_Dr (bu/ac)') +
    annotate('text', label=sprintf('%.1f b/Ac', meds.crop$medyld), x=xlabs, y=ylabs, color=mycolors, size=6)
 print(p3)
-ggsave('starter_vs_yield_2019_c.pdf')
+ggsave('starter_vs_yield_2019_c.png')
 
-
+# nesting like this works, but I decided I don't like the output
+# bigfig2 <- grid.arrange(p, p2, nrow=2, ncol=1, top='Starter experiment 2019')
+# bigfig3 <- grid.arrange(bigfig2, p3, nrow=1, ncol=2)
+# print(bigfig3)
+# ggsave('starter_vs_yield_2019_2.png', bigfig3)

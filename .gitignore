@@ -5,3 +5,4 @@
 starter_vs_yield_2019.Rmd
 *.oldcomments.R
 *.pdf
+.DS_Store

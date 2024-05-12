@@ -107,6 +107,7 @@ p <- ggplot(data_ras1_df) +
    geom_raster(aes(x=x, y=y, fill=Yld_Vol_Dr)) +
    scale_fill_distiller(palette='YlGn', limits=c(120,270), direction='horizontal', oob=squish) + # squish is in the scales package and it pegs OOB values at the ends of the color scale (rather than NA)
    labs(x='Ft', y='Ft', title='Yield') +
+   theme_gray(base_size=16) +
    geom_sf(data=mypoly, fill=NA, linewidth=1., color='blue', linetype='21') +
    coord_sf(datum=target_crs)
 print(p)
@@ -116,10 +117,12 @@ ggsave('starter_vs_yield_2019_a.png')
 # plot different treatment types with polygon region
 mycolors = c('skyblue','orange','forestgreen')
 p2 <- ggplot(data_f) +
-   geom_sf(aes(color=Product)) +
+   geom_sf(aes(color=Product), size=0.2) +
    scale_color_manual(values=mycolors) +
    geom_sf(data=mypoly, fill=NA, linewidth=1., color='blue', linetype='21') +
    labs(x='Ft', y='Ft', title='Product Map') +
+   theme_gray(base_size=16) +
+   guides(colour = guide_legend(override.aes = list(size=2))) +
    coord_sf(datum=target_crs)
 print(p2)
 ggsave('starter_vs_yield_2019_b.png')
@@ -143,6 +146,7 @@ p3 <- ggplot(data_f_crop, aes(x = Yld_Vol_Dr, fill=Product)) +
    geom_vline(xintercept = meds.crop$medyld, color=mycolors, linewidth=1) +
    xlim(190,260) +
    labs(title='Yield vs Product', x='Yld_Vol_Dr (bu/ac)') +
+   theme_gray(base_size=16) +
    annotate('text', label=sprintf('%.1f b/Ac', meds.crop$medyld), x=xlabs, y=ylabs, color=mycolors, size=6)
 print(p3)
 ggsave('starter_vs_yield_2019_c.png')

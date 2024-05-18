@@ -2,6 +2,10 @@
 
 The three treatments in this experiment were applied with a strip-till bar a day or so prior to planting corn.  All areas were treated with UAN 32%.  Some areas had in addition a 7-22-5 liquid as a starter and some had the 32%, starter, and ATS.  In this trial the starter produced a yield gain of about 3 bu/ac and the ATS gave an additional 2 bu/ac.  It's impossible to see those gains in the yield data until you make the histograms.  This is food-grade non-GMO white corn in east central IL. 
 
+![Yield map](starter_vs_yield_2019_a.png)
+![Product map](starter_vs_yield_2019_b.png)
+![Yield histograms](starter_vs_yield_2019_c.png)
+
 <!-- comment -->
 
 <p align="center">

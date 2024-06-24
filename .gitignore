@@ -7,3 +7,4 @@ starter_vs_yield_2019.Rmd
 *.pdf
 .DS_Store
 linktoSMSData
+.Rhistory

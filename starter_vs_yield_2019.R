@@ -112,7 +112,7 @@ p <- ggplot(data_ras1_df) +
    geom_sf(data=mypoly, fill=NA, linewidth=1., color='blue', linetype='21') +
    coord_sf(datum=target_crs)
 print(p)
-ggsave('starter_vs_yield_2019_a.png', width=7.5, height=4) # mess around with width= and height= to fix whitespace
+ggsave('starter_vs_yield_2019_1.png', width=7.5, height=4) # mess around with width= and height= to fix whitespace
 
 
 # plot different treatment types with polygon region
@@ -127,7 +127,7 @@ p2 <- ggplot(data_f) +
    guides(colour = guide_legend(override.aes = list(size=2))) +
    coord_sf(datum=target_crs)
 print(p2)
-ggsave('starter_vs_yield_2019_b.png', width=7.5, height=4)
+ggsave('starter_vs_yield_2019_2.png', width=7.5, height=4)
 
 
 # crop the big data frame to retain only the yield data within the boundary
@@ -151,7 +151,7 @@ p3 <- ggplot(data_f_crop, aes(x = Yld_Vol_Dr, fill=Product)) +
    theme_gray(base_size=16) +
    annotate('text', label=sprintf('%.1f b/Ac', meds.crop$medyld), x=xlabs, y=ylabs, color=mycolors, size=6)
 print(p3)
-ggsave('starter_vs_yield_2019_c.png', width=7, height=3.5)
+ggsave('starter_vs_yield_2019_3.png', width=7, height=3.5)
 
 # nesting like this works, but I decided I don't like the output
 # bigfig2 <- grid.arrange(p, p2, nrow=2, ncol=1, top='Starter experiment 2019')

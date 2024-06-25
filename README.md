@@ -40,4 +40,6 @@ The figures show this analysis for one field which had partial cover crops in 20
   <img src="starter_vs_yield_2019_b.png" width="400" height="330">
   <img src="starter_vs_yield_2019_c.png" width="400" height="300">
 </p>
+
+consider thumbnail [<img src="image.png" width="250"/>](image.png)
 -->

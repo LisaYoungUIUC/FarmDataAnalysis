@@ -1,4 +1,4 @@
-Some examples of codes that I have found useful in analyzing the data we produce on our farm.
+These are some scripts that I have written for analyzing our farm data.
 - [Starter fertilizer experiment](#starter-fertilizer-experiment)
 - [Stacked yield rasters](#stacked-yield-rasters)
 - [Cover crop experiments](#cover-crop-experiments)

@@ -21,11 +21,12 @@
 library(tidyverse)
 library(janitor)
 library(sf)
-library(raster)  # possible conflict with dplyr on 'select'. raster::select is an interactive cursor-draw polygon thing.
+library(terra)
 library(scales)
 library(gridExtra)
 
 # setup information
+setwd(this.path::here())
 
 w <- matrix(1, 3, 3)  # for smoothing.  if you want to skip the corners, use c(0,1,0,1,0,1,0,1,0), nrow=3)
 
@@ -53,7 +54,7 @@ data$Product[(data$Product == 'Sulfur starter')] <- '32+S+starter'
 # acreage totals and grouped by the 3 products.
 acres <- data %>%
    group_by(Product) %>%
-   summarize(sum = sum(Area__ac_, na.rm=TRUE))
+   dplyr::summarize(sum = sum(Area__ac_, na.rm=TRUE))
 print(sprintf('%15s %s', 'Product','Acres'))
 for (i in 1:length(acres)) {
    print(sprintf('%15s %.2f', acres$Product[i], acres$sum[i]))
@@ -62,16 +63,16 @@ print(sprintf('%15s %.2f', 'Total',sum(acres$sum)))
 
 # prep a rasterized version of the normalized yield data.
 # new coordinate system will be projected, in ft measured from SW corner.
-bd <- extent(data)
-target_crs <- sprintf('+proj=tmerc +lon_0=%f +lat_0=%f +units=ft', bd@xmin, bd@ymin) 
+bd <- ext(data)
+target_crs <- sprintf('+proj=tmerc +lon_0=%f +lat_0=%f +units=ft', xmin(bd), ymin(bd)) 
 data_f <- sf::st_transform(data, crs=target_crs)
-r <- raster(data_f, res=10, crs=target_crs) # units here in ft.  this gives 10 ft pixels.
+r <- rast(extent=ext(data_f), resolution=10, crs=target_crs) # units here in ft.  this gives 10 ft pixels.
 data_ras1 <- rasterize(x=data_f, y=r, 'Yld_Vol_Dr', fun=median, na.rm=TRUE)
 # 3x3 boxcar smoothing is not bad, maybe helpful
-data_ras1$layer <- focal(data_ras1$layer, w, median, na.rm=TRUE, pad=TRUE) # NAonly=TRUE if you don't want to touch most of the original values
+data_ras1 <- focal(data_ras1, w, median, na.rm=TRUE, pad=TRUE) # na.policy='only' if you don't want to touch most of the original values
 # ggplot wants dataframes, not rasters
 data_ras1_df <- as.data.frame(data_ras1, xy=TRUE) %>%
-   rename(Yld_Vol_Dr = 'layer')
+   rename(Yld_Vol_Dr = 'focal_median')
 
 
 # if requested: interactive setting of polygon for region to study
@@ -111,7 +112,7 @@ p <- ggplot(data_ras1_df) +
    geom_sf(data=mypoly, fill=NA, linewidth=1., color='blue', linetype='21') +
    coord_sf(datum=target_crs)
 print(p)
-ggsave('starter_vs_yield_2019_a.png')
+ggsave('starter_vs_yield_2019_a.png', width=7.5, height=4) # mess around with width= and height= to fix whitespace
 
 
 # plot different treatment types with polygon region
@@ -122,15 +123,16 @@ p2 <- ggplot(data_f) +
    geom_sf(data=mypoly, fill=NA, linewidth=1., color='blue', linetype='21') +
    labs(x='Ft', y='Ft', title='Product Map') +
    theme_gray(base_size=16) +
+   theme(plot.margin = margin(0,0,0,0)) +
    guides(colour = guide_legend(override.aes = list(size=2))) +
    coord_sf(datum=target_crs)
 print(p2)
-ggsave('starter_vs_yield_2019_b.png')
+ggsave('starter_vs_yield_2019_b.png', width=7.5, height=4)
 
 
 # crop the big data frame to retain only the yield data within the boundary
 blah <- st_within(data_f, mypoly) %>% lengths > 0
-data_f_crop <- filter(data_f, blah)
+data_f_crop <- dplyr::filter(data_f, blah)
 
 
 # plot the histograms of the yields in those 3 treatments and overlay their medians.
@@ -139,7 +141,7 @@ ylabs = c(0.03, 0.035, 0.04)
 mycolors = c('dodgerblue','orange','forestgreen')
 meds.crop <- data_f_crop %>%
    group_by(Product) %>%
-   summarize(medyld = median(Yld_Vol_Dr, na.rm=TRUE))
+   dplyr::summarize(medyld = median(Yld_Vol_Dr, na.rm=TRUE))
 p3 <- ggplot(data_f_crop, aes(x = Yld_Vol_Dr, fill=Product)) +    
    geom_histogram(alpha=0.65, binwidth=1, position='identity', aes(y=after_stat(density))) +   
    scale_fill_manual(values=mycolors) +
@@ -149,7 +151,7 @@ p3 <- ggplot(data_f_crop, aes(x = Yld_Vol_Dr, fill=Product)) +
    theme_gray(base_size=16) +
    annotate('text', label=sprintf('%.1f b/Ac', meds.crop$medyld), x=xlabs, y=ylabs, color=mycolors, size=6)
 print(p3)
-ggsave('starter_vs_yield_2019_c.png')
+ggsave('starter_vs_yield_2019_c.png', width=7, height=3.5)
 
 # nesting like this works, but I decided I don't like the output
 # bigfig2 <- grid.arrange(p, p2, nrow=2, ncol=1, top='Starter experiment 2019')

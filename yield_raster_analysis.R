@@ -12,10 +12,11 @@
 library(tidyverse)
 library(janitor)
 library(sf)
-library(raster)
+library(terra)
 library(RColorBrewer)
 library(gridExtra)
 library(scales)
+library(patchwork)
 
 setwd(this.path::here())
 
@@ -49,10 +50,10 @@ for (dirname in dirstoread){
 # use most recent available dataset to define coordinate system and raster grid
 nfiles <- length(processme)
 data <- sf::read_sf(processme[nfiles])
-bd <- extent(data)
-target_crs <- sprintf('+proj=tmerc +lon_0=%f +lat_0=%f +units=ft', bd@xmin, bd@ymin) 
+bd <- ext(data)
+target_crs <- sprintf('+proj=tmerc +lon_0=%f +lat_0=%f +units=ft', xmin(bd), ymin(bd)) 
 data_f <- sf::st_transform(data, crs=target_crs)
-r <- raster(data_f, res=pixelsize, crs=target_crs)
+r <- rast(extent=ext(data_f), resolution=20, crs=target_crs) # note units here are now ft!
 
 # big loop over individual data files; plot each year and build rasterbrick
 p <- list()
@@ -65,10 +66,10 @@ for (filetoread in processme){
    # rasterize the normalized yield
    data_ras1 <- rasterize(x=data, y=r, field="yldnorm", fun=median, na.rm=TRUE) # unitless (bu/acre)/median
    # 3x3 boxcar smoothing is not bad, maybe helpful
-   data_ras1$layer <- focal(data_ras1$layer, w, median, na.rm=TRUE, pad=TRUE) 
+   data_ras1 <- focal(data_ras1, w, median, na.rm=TRUE, pad=TRUE) 
    # add this year's raster to the multipanel grid image
    data_ras1_df <- as.data.frame(data_ras1, xy=TRUE) %>%
-      rename(yld_norm = 'layer')
+      rename(yld_norm = 'focal_median')
    p[[i]] <- ggplot(data_ras1_df) +
       geom_raster(aes(x=x, y=y, fill=yld_norm)) +
       scale_fill_distiller(palette='YlGn', limits=c(0.85,1.15), direction='horizontal', oob=squish) + 
@@ -77,15 +78,15 @@ for (filetoread in processme){
       theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) +
       theme(plot.margin=margin(t = 0, r = 0, b = 0, l = 0, unit = "pt"))
    # add the data_ras1 into a rasterbrick with all the years (for plotting outside the loop)
-   names(data_ras1$layer) <- thisyr
+   names(data_ras1) <- thisyr
    if (i == 1){
       # it's the first year for this file
       bigrb <- data_ras1 
    } else {
-      bigrb <- addLayer(bigrb, data_ras1)
+      add(bigrb) <- data_ras1
    }
-
 }
+
 # finished looping over years
 # spit out the big multipanel plot of yield maps
 bigfig <- wrap_plots(p, nrow=3, ncol=5) +
@@ -95,12 +96,12 @@ print(bigfig)
 ggsave('Yield_rasters.png', plot=bigfig, path='.')
 
 # statistics on the rasterbrick with multiple years
-bigmedian <- calc(bigrb, fun=median, na.rm=TRUE) %>%
+bigmedian <- app(bigrb, fun=median, na.rm=TRUE) %>%
    as.data.frame(xy=TRUE) %>% # needed for ggplot
-   rename(yldnorm='layer')
-bigstdev <- calc(bigrb, fun=StdDev, na.rm=TRUE) %>%
+   rename(yldnorm='median')
+bigstdev <- app(bigrb, fun=sd, na.rm=TRUE) %>%
    as.data.frame(xy=TRUE) %>%
-   rename(yield_stdev='layer')
+   rename(yield_stdev='sd')
 p0 <- ggplot(bigmedian) +
    geom_raster(aes(x=x, y=y, fill=yldnorm)) +
    scale_fill_distiller(palette='YlGn', limits=c(0.85,1.15), direction='horizontal', oob=squish) + 
@@ -108,7 +109,7 @@ p0 <- ggplot(bigmedian) +
    theme_gray(base_size=16) +
    labs(x='ft', y='ft', title='All years median')
 print(p0)
-ggsave('Yield_median.png', plot=p0, path='.')
+ggsave('Yield_median.png', plot=p0, path='.', width=7, height=4)
 p0b <- ggplot(bigstdev) +
    geom_raster(aes(x=x, y=y, fill=yield_stdev)) +
    scale_fill_distiller(palette='YlOrRd', limits=c(0,0.35), direction='horizontal', oob=squish) + 
@@ -120,4 +121,4 @@ p0b <- ggplot(bigstdev) +
    annotate("segment", x=1300, xend=1650, y=600, yend=800, color="blue", linewidth=1, arrow=arrow()) +
    annotate("segment", x=1300, xend=2400, y=600, yend=200, color="blue", linewidth=1, arrow=arrow())
 print(p0b)
-ggsave('Yield_stdev.png', plot=p0b, path='.')
+ggsave('Yield_stdev.png', plot=p0b, path='.', width=7, height=4)

@@ -142,6 +142,8 @@ for (j in 1:length(stripfiles)){
                   fill = rgb(r=shift_df$red, g=shift_df$green, b = shift_df$blue, maxColorValue=maxcol), show.legend = FALSE) +
       geom_sf(data=mypoly_m, fill=NA, color='magenta', linewidth=0.5, linetype='dotted') +
       geom_sf(data=justonebound_m, fill=NA, color='magenta', linewidth=0.5) +
+      {if (fieldnm=='Hett106') annotate('text', label='strips', x=-Inf, y=-Inf, hjust=-1.0, vjust=-4.0, color='magenta')} +
+      {if (fieldnm=='Hett106') annotate('text', label='control', x=-Inf, y=-Inf, hjust=-2.5, vjust=-8.0, color='magenta')} +
       coord_sf() +
       labs(x='', y='', title=date) + 
       theme(axis.text.x=element_blank(), axis.ticks.x=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank())
@@ -239,6 +241,11 @@ for (j in 1:length(stripfiles)){
    print(histfig)
    ggsave(paste('strips_expt_ims_',fieldnm,'.png', sep=''), plot=imsfig, path='.')
    ggsave(paste('strips_expt_hist_',fieldnm,'.png', sep=''), plot=histfig, path='.')
+   
+   # need coordinates?
+   if (fieldnm=='Hett106') {
+      plot(ndvi_sh)
+   }
 }
 # end of loop over fields
 

@@ -18,7 +18,7 @@
 library(tidyverse)
 library(janitor)
 library(sf)
-library(raster)
+# library(raster)
 library(RColorBrewer)
 library(gridExtra)
 library(scales)

@@ -43,6 +43,7 @@ The cover crops in this experiment were a mix of barley, oats,
 several brassica species and crimson clover; the field shown in these figures was seeded with a drone in September, into standing beans during leaf drop (~ R7).
 Harvest data will be coming soon.
 
+![corn in terminated covers](IMG_2264.jpg)
 ![Strip till NDVI images](strips_expt_ims_Hett106.png)
 ![Strip till NDVI histograms](strips_expt_hist_Hett106.png)
 

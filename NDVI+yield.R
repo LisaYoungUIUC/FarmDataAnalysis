@@ -9,7 +9,6 @@
 # The code also plots a timeseries showing the yield impact of the cover crops.
 
 # TO DO:
-# - convert from raster to terra.  looks like sf is ok, but raster will go away.
 # - are there better color schemes?
 
 
@@ -18,22 +17,23 @@
 library(tidyverse)
 library(janitor)
 library(sf)
-# library(raster)
+library(terra)
 library(RColorBrewer)
 library(gridExtra)
 library(scales)
+library(boot)
 
 readsatdata <- function(date, myraster) {
    # Satellite NDVI data from `date` will be read and cropped to the extent of myraster
    redname <- paste('../satellite data/datadirs/',date,'_EPSG32616/',date,'-Sentinel-2_L2A_B04_Raw.tiff',sep='')
    nirname <- paste('../satellite data/datadirs/',date,'_EPSG32616/',date,'-Sentinel-2_L2A_B08_Raw.tiff',sep='')
-   nir <- raster(nirname)
-   red <- raster(redname)
+   nir <- rast(nirname)
+   red <- rast(redname)
    ndvi <- (nir-red)/(nir+red)
-   ndvi <- raster::shift(ndvi, dx=-5, dy=12) # units: m. satellite-based coords often need a little tweak
-   ndvi_crop <- raster::crop(ndvi, myraster)  # copies the extent info from the yield file
+   ndvi <- terra::shift(ndvi, dx=-5, dy=12) # units: m. satellite-based coords often need a little tweak
+   ndvi_crop <- terra::crop(ndvi, myraster)  # copies the extent info from the yield file
    ndvi_crop_df <- as.data.frame(ndvi_crop, xy=TRUE) %>%
-      rename(NDVI='layer')
+      rename(NDVI=names(ndvi_crop)[[1]])
    return(ndvi_crop_df)
 }
 
@@ -48,6 +48,7 @@ readyielddata <- function(filetoread, target_raster, aoi){
    blah <- st_within(data, aoi$geometry[1]) %>% lengths > 0
    data[blah, 'AOI_flag'] <- 1.0 # points where there was cover crop in 2018 and 2019
    data_ras <- rasterize(x=data, y=target_raster, field=c('yldnorm','AOI_flag'), fun=median, na.rm=TRUE)
+   names(data_ras) <- c('yldnorm', 'AOI_flag')
    # 3x3 boxcar smoothing is not bad, maybe helpful
    data_ras$yldnorm <- focal(data_ras$yldnorm, w3, median, na.rm=TRUE, pad=TRUE) # NAonly=TRUE if you don't want to touch most of the original values
    data_ras_df <- as.data.frame(data_ras, xy=TRUE) 
@@ -115,18 +116,17 @@ soilshapes <- sf::read_sf(soiltypefile) %>%
    sf::st_transform(crs=st_crs(elevdata))
 soilshapes$Name <- as.factor(soilshapes$Name)
 # crop soil type polygons to the extent of the raster data
-cropsoilshapes <- st_crop(soilshapes, extent(elevdata))
+cropsoilshapes <- st_crop(soilshapes, ext(elevdata))
 # clean up: this elevation file has a few bad data points
 elevdata$elevation <- replace(elevdata$elevation, elevdata$elevation<685.3, NA)
 # rasterize and smooth elevation
-r <- raster(extent(elevdata), res=7) # units: m. res=0.00007 degrees works well too
-raster::crs(r) <- crs(elevdata)
-elev_ras <- rasterize(elevdata, r, field='elevation', fun=median, na.rm=TRUE)
+r <- rast(extent=ext(elevdata), resolution=7, crs=crs(elevdata)) # units: m. res=0.00007 degrees works well too
+elev_ras <- rasterize(elevdata, y=r, field='elevation', fun=median, na.rm=TRUE)
 elev_ras_sm <- focal(elev_ras, w5, median, na.rm=TRUE, pad=TRUE)
 
 # plot elevation
 elev_ras_df <- as.data.frame(elev_ras_sm, xy=TRUE) %>%
-   rename(Elev='layer')
+   rename(Elev='focal_median')
 p1 <- ggplot(elev_ras_df) +
    geom_raster(aes(x=x, y=y, fill=Elev)) +
    scale_fill_viridis_c(label = function(x) sprintf("%.0f", x)) +
@@ -231,8 +231,8 @@ for (i in 1:length(yieldfiles)){
    m1 <- rastmeds$medyld[rastmeds$AOI_flag==1.0][1]
    m2 <- rastmeds$medyld[rastmeds$AOI_flag==0.0][1]
    # estimate uncertainty on median from bootstrapping
-   cover <- filter(yield_ras_df, AOI_flag==1.0)
-   control <- filter(yield_ras_df, AOI_flag==0.0)
+   cover <- dplyr::filter(yield_ras_df, AOI_flag==1.0)
+   control <- dplyr::filter(yield_ras_df, AOI_flag==0.0)
    BootDist_cov <- boot(data = cover$yldnorm, statistic = median.function, R=5000)
    BootDist_con <- boot(data = control$yldnorm, statistic = median.function, R=5000)
    BootDist_rat <- BootDist_cov$t/BootDist_con$t # by hand distribution mimicking the ratio
@@ -251,7 +251,7 @@ for (i in 1:length(yieldfiles)){
 # plot timeseries
 barmean <- mean(timeseries$ratio)
 barwidth <- sd(timeseries$ratio)  # dispersion in the ratios for this field
-subset <- filter(timeseries, (year > 2017) & (year < 2020)) # the two years that are shown in the other figure
+subset <- dplyr::filter(timeseries, (year > 2017) & (year < 2020)) # the two years that are shown in the other figure
 ts <- ggplot(timeseries, aes(x=year, y=ratio)) +
    geom_line() +
    geom_hline(yintercept=1.0, color='black', linetype='21') +
@@ -264,8 +264,10 @@ ts <- ggplot(timeseries, aes(x=year, y=ratio)) +
    geom_point(data=subset, aes(x=year, y=ratio), shape=21, size=4, stroke=2) +
    ylim(0.9, 1.1) +
    theme_gray(base_size=16) +
+   annotate('point', x=2010, y=0.90, shape=21, size=4, stroke=2) +
+   annotate('text', x=2010, y=0.90, label='   partial cover crops', hjust='left') +
    guides(color = guide_legend('cash crop')) +
-   labs(x='Year', y='Yield ratio covercrops / control area') +
+   labs(x='Year', y='Yield ratio cover region / control area') +
    labs(title='Yield impacts of cover crops')
 print(ts)
 ggsave('cc+yield_timeseries.pdf', ts)

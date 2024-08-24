@@ -1,19 +1,8 @@
 These are some scripts that I have written for analyzing our farm data.
-- [Starter fertilizer experiment](#starter-fertilizer-experiment)
 - [Cover crop yield impacts](#cover-crop-yield-impacts)
 - [Strip till in cover crops](#strip-till-in-cover-crops)
+- [Starter fertilizer experiment](#starter-fertilizer-experiment)
 - [Stacked yield rasters](#stacked-yield-rasters)
-
-## Starter Fertilizer Experiment 
- 
-The code in starter_vs_yield_2019.R reads a combine yield monitor shape file and does some basic analysis on the three different planting-time fertilizer treatments recorded in that yield data.  Analysis is easy since the operator got the planting-time fertilizer application data loaded up where the combine yield monitor could incorporate it into the yield monitor output.  (Getting things set up this way is nontrivial.)  You can exclude field edges and waterways from the study, either interactively drawing a polygon around the region of interest or reading one from a shape file.
-
-The three treatments in this experiment were applied with a strip-till bar a day or so prior to planting corn.  All areas were treated with UAN 32%.  Some areas had in addition a 7-22-5 liquid as a starter and some had the 32%, starter, and ATS.  In this trial the starter produced a yield gain of about 3 bu/ac and the ATS gave an additional 2 bu/ac.  It's impossible to see those gains in the yield data until you make the histograms.  This is food-grade non-GMO white corn in east central IL. 
-
-![Yield map](starter_vs_yield_2019_1.png)
-![Product map](starter_vs_yield_2019_2.png)
-![Yield histograms](starter_vs_yield_2019_3.png)
-
 
 ## Cover Crop Yield Impacts
 
@@ -46,6 +35,16 @@ Harvest data will be coming soon.
 ![corn in terminated covers](IMG_2264.jpg)
 ![Strip till NDVI images](strips_expt_ims_Hett106.png)
 ![Strip till NDVI histograms](strips_expt_hist_Hett106.png)
+
+## Starter Fertilizer Experiment 
+ 
+The code in starter_vs_yield_2019.R reads a combine yield monitor shape file and does some basic analysis on the three different planting-time fertilizer treatments recorded in that yield data.  Analysis is easy since the operator got the planting-time fertilizer application data loaded up where the combine yield monitor could incorporate it into the yield monitor output.  (Getting things set up this way is nontrivial.)  You can exclude field edges and waterways from the study, either interactively drawing a polygon around the region of interest or reading one from a shape file.
+
+The three treatments in this experiment were applied with a strip-till bar a day or so prior to planting corn.  All areas were treated with UAN 32%.  Some areas had in addition a 7-22-5 liquid as a starter and some had the 32%, starter, and ATS.  In this trial the starter produced a yield gain of about 3 bu/ac and the ATS gave an additional 2 bu/ac.  It's impossible to see those gains in the yield data until you make the histograms.  This is food-grade non-GMO white corn in east central IL. 
+
+![Yield map](starter_vs_yield_2019_1.png)
+![Product map](starter_vs_yield_2019_2.png)
+![Yield histograms](starter_vs_yield_2019_3.png)
 
 ## Stacked Yield Rasters 
 

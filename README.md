@@ -10,7 +10,7 @@ We started experimenting with cover crops in about 2014.  How much, if any, do t
 
 For context, the code first plots the elevation and soil type map of the field.  We plot some NDVI images to show the location of the cover crops and we plot the (normalized) yield maps from later that fall.  Then we go back and look at a dozen years' worth of yield data from that field; we compute the ratios of the yields in the cover crop area to the yields in the rest of the field.  Realistic uncertainties in the yield ratios come from the years when there was no treatment difference between the two areas -- that's the darker grey bar in the second figure.
 
-The figures show this analysis for one field which had partial cover crops in 2018 and 2019.  The cover crop was cereal rye, which was drilled in the previous fall after harvest.  We plant green into standing rye, usually as the rye is flowering, and then terminate it.  In this case we found no significant yield impact on the soybeans in 2018 (cover area / control area = 0.99 $\pm$ 0.03), but we did find a modestly significant yield impact on the corn in 2019 (0.93 $\pm$ 0.03).  Since that time we have not used cereal rye before corn; we have used a mix of species including oats, barley, brassicas, and clovers.  In 2023/2024 we trialed more than a dozen cover crop species including camelina, flax, several clovers, and hairy vetch.  Stay tuned for comments on their yield impacts!
+The figures show this analysis for one field which had partial cover crops in 2018 and 2019.  The cover crop was cereal rye, which was drilled in the previous fall after harvest.  For beans, we plant green into standing rye, usually as the rye is flowering, and then terminate it.  For corn, we typically terminate the cover before planting.  In this case we found no significant yield impact on the soybeans in 2018 (yield ratio cover area / control area = 0.99 $\pm$ 0.03).  We did find a modestly significant yield impact on the corn in 2019 (yield ratio 0.93 $\pm$ 0.03).  Since that time we have not used cereal rye before corn; we have used a mix of species including oats, barley, brassicas, and clovers.  In 2023/2024 we trialed more than a dozen cover crop species including camelina, flax, several clovers, and hairy vetch.  Stay tuned for comments on their yield impacts!
 
 ![ndvi+yield maps](NDVI+yield.png)
 ![cover crops timeseries yield impacts](cc+yield_timeseries.png)
@@ -24,17 +24,20 @@ and ultimately the corn yield.  This code plots NDVI images and histograms for t
 regions with the cleared strips and the control regions without strips.
 Older Sentinel-2 images are registered to a more recent image that seems to have
 better coordinates.
-In April (prime time for the cover crops to be putting on biomass) the regions
-with cleared strips have about 80% as much biomass as the control regions.  The corn was planted in mid-May.  In
-June, the corn in strip-tilled regions has 5% to 20% more biomass than the corn
-in the control regions.
+
 The cover crops in this experiment were a mix of barley, oats, 
 several brassica species and crimson clover; the field shown in these figures was seeded with a drone in September, into standing beans during leaf drop (~ R7).
+In April (prime time for the cover crops to be putting on biomass) the regions
+with cleared strips have about 80% as much cover crop biomass as the control regions.  The corn was planted in mid-May.  In
+June, the corn in strip-tilled regions has 5% to 20% more biomass than the corn
+in the control regions.
+
 Harvest data will be coming soon.
 
 ![corn in terminated covers](IMG_2264.jpg)
 ![Strip till NDVI images](strips_expt_ims_Hett106.png)
 ![Strip till NDVI histograms](strips_expt_hist_Hett106.png)
+*All NDVI data on this page are derived from modified Copernicus Sentinel data [2024] processed by Sentinel Hub.*
 
 ## Starter Fertilizer Experiment 
  

@@ -37,6 +37,7 @@ Harvest data will be coming soon.
 ![corn in terminated covers](IMG_2264.jpg)
 ![Strip till NDVI images](strips_expt_ims_Hett106.png)
 ![Strip till NDVI histograms](strips_expt_hist_Hett106.png)
+![Strip till NDVI timeseries](strips_expt_timeseries.png)
 *All NDVI data on this page are derived from modified Copernicus Sentinel data [2024] processed by Sentinel Hub.*
 
 ## Starter Fertilizer Experiment 

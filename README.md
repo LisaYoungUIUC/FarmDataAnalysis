@@ -21,7 +21,7 @@ The code strips_experiment.R carries out the analysis for an experiment using st
 our cover crops.  We wanted to know whether clearing some strips for the subsequent
 corn crop would significantly affect the biomass of the cover and the cash crops,
 and ultimately the corn yield.  This code plots NDVI images and histograms for the
-regions with the cleared strips and the control regions without strips.
+regions with the cleared strips and the regions without strips.
 Older Sentinel-2 images are registered to a more recent image that seems to have
 better coordinates.
 
@@ -34,7 +34,14 @@ in the control regions.
 
 Harvest data will be coming soon.
 
-![corn in terminated covers](IMG_2264.jpg)
+<p align="center">
+  <img alt="December" src="IMG_2062.jpg" width="25%">
+&nbsp;
+  <img alt="April" src="IMG_2174.jpg" width="35%">
+&nbsp;
+  <img alt="May" src="IMG_2264.jpg" width="35%">
+</p>
+
 ![Strip till NDVI images](strips_expt_ims_Hett106.png)
 ![Strip till NDVI histograms](strips_expt_hist_Hett106.png)
 ![Strip till NDVI timeseries](strips_expt_timeseries.png)

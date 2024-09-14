@@ -35,11 +35,13 @@ in the control regions.
 Harvest data will be coming soon.
 
 <p align="center">
-  <img alt="December" src="IMG_2062.jpg" width="25%">
+    <img alt="September" src="IMG_1978.jpg" width="20%">
 &nbsp;
-  <img alt="April" src="IMG_2174.jpg" width="35%">
+  <img alt="December" src="IMG_2062.jpg" width="20%">
 &nbsp;
-  <img alt="May" src="IMG_2264.jpg" width="35%">
+  <img alt="April" src="IMG_2174.jpg" width="28%">
+&nbsp;
+  <img alt="May" src="IMG_2264.jpg" width="28%">
 </p>
 
 ![Strip till NDVI images](strips_expt_ims_Hett106.png)
